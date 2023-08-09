@@ -8,16 +8,48 @@ import { Component, AfterViewInit } from '@angular/core';
       <h2>TUU Reserva</h2>
       <div *ngIf="loading">
         <h3>El iframe está cargando. Aquí deberíamos mostrar un shimmer</h3>
-        <p>Esperando mensaje del iframe para ocultar este mensaje y mostrar el contenido del microfronted.</p>
       </div>
       <!-- <iframe [ngStyle]="{'display': loading ? 'none' : 'unset'}" id="skeduIframe" style="border: 1px solid mediumslateblue;" width="100%" height="800px" src="https://haulmer-angular-wks-testing-2.azurewebsites.net/" frameborder="0"></iframe> -->
-      <iframe [ngStyle]="{'display': loading ? 'none' : 'unset'}" id="skeduIframe" style="border: 1px solid mediumslateblue;" width="100%" height="800px" src="http://localhost:3000" frameborder="0"></iframe>
+      <iframe (load)="iframeLoaded()" [ngStyle]="{'display': loading ? 'none' : 'unset'}" id="skeduIframe" style="border: 1px solid mediumslateblue;" width="100%" height="800px" src="http://localhost:3000" frameborder="0"></iframe>
     </div>
   `,
   styleUrls: ['./homepage.component.scss']
 })
-export class HomepageComponent implements AfterViewInit {
+// export class HomepageComponent implements AfterViewInit {
+export class HomepageComponent {
   public loading = true;
+
+  iframeLoaded() {
+    console.log('[WKS] El iframe está cargado');
+    const skeduIframe: any = document.querySelector('#skeduIframe');
+    const skeduWindow = skeduIframe.contentWindow;
+    const skeduUrl = new URL(skeduIframe.getAttribute('src'));
+
+    // Send config to iframe every .5sec
+    let currentTry = 0;
+    const maxTries = 10;
+    const sendIframeMsg = setInterval(() => {
+      if (currentTry >= maxTries) {
+        clearInterval(sendIframeMsg);
+        return;
+      }
+      currentTry++;
+
+      this.sendMessage({
+        type: 'config',
+        data: {
+          accessToken: 'Bearer 13t12e3rt12'
+        }
+      }, skeduWindow, skeduUrl.origin)
+    }, 500);
+
+    // Listen for iframe ready message and stop sending config
+    this.listenMessages(skeduUrl.origin, (event: any) => {
+      if (event.data.data != 'ready') return;
+      this.loading = false;
+      clearInterval(sendIframeMsg);
+    });
+  }
 
   listenMessages(fromOrigin: string, callback: Function) {
     console.log('[WKS] Escuchando mensajes');
@@ -33,23 +65,23 @@ export class HomepageComponent implements AfterViewInit {
     windowElement.postMessage(message, targetOrigin);
   }
 
-  ngAfterViewInit(): void {
-    const skeduIframe: any = document.querySelector('#skeduIframe');
-    const skeduWindow = skeduIframe.contentWindow;
-    const skeduUrl = new URL(skeduIframe.getAttribute('src'));
+  // ngAfterViewInit(): void {
+  //   const skeduIframe: any = document.querySelector('#skeduIframe');
+  //   const skeduWindow = skeduIframe.contentWindow;
+  //   const skeduUrl = new URL(skeduIframe.getAttribute('src'));
 
-    const initSkedu = (event: any) => {
-      if (event.data.data != 'ready') return;
-      this.loading = false;
-      this.sendMessage({
-        type: 'config',
-        data: {
-          accessToken: 'Bearer 13t12e3rt12'
-        }
-      }, skeduWindow, skeduUrl.origin)
-    };
+  //   const initSkedu = (event: any) => {
+  //     if (event.data.data != 'ready') return;
+  //     this.loading = false;
+  //     this.sendMessage({
+  //       type: 'config',
+  //       data: {
+  //         accessToken: 'Bearer 13t12e3rt12'
+  //       }
+  //     }, skeduWindow, skeduUrl.origin)
+  //   };
 
-    // When recive message from iframe send configuration
-    this.listenMessages(skeduUrl.origin, initSkedu);
-  }
+  //   // When recive message from iframe send configuration
+  //   this.listenMessages(skeduUrl.origin, initSkedu);
+  // }
 }

@@ -24,6 +24,8 @@ function sendMessage(message, windowElement, targetOrigin) {
 }
 
 export default function Home() {
+  const [accessToken, setAccessToken] = React.useState('Sin access token');
+
   React.useEffect(() => {
     if (checkIframe()) {
       const workspaceWindow = window.parent;
@@ -31,15 +33,16 @@ export default function Home() {
       const workspaceUrl = new URL('http://localhost:4200');
 
       // Listen workspace messages to get config with bearer token
-      listenMessages(workspaceUrl.origin, () => {
-        console.log('[SKEDU] Configuración recibida. Ahora se debería renderizar la app (No se hizo en este ejemplo).');
-      });
+      listenMessages(workspaceUrl.origin, (event) => {
+        console.log('[SKEDU] Configuración recibida.');
+        setAccessToken(event.data.data.accessToken);
 
-      // Notify workspace that app is ready
-      sendMessage({
-        type: 'init',
-        data: 'ready'
-      }, workspaceWindow, workspaceUrl.origin);
+        // Notify workspace that app is ready
+        sendMessage({
+          type: 'init',
+          data: 'ready'
+        }, workspaceWindow, workspaceUrl.origin);
+      });
     }
   }, []);
 
@@ -54,6 +57,7 @@ export default function Home() {
         <h1 className={styles.title}>
           Frontend <a href="https://nextjs.org">Skedu</a>
         </h1>
+        <p className='{styles.description}'>Access token: {accessToken}</p>
         <Link href="/rutas/ruta-uno">Ir a ruta uno</Link>
       </main>
 
