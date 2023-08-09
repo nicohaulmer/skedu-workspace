@@ -9,7 +9,7 @@ import { Component, AfterViewInit } from '@angular/core';
       <div *ngIf="loading">
         <h3>El iframe está cargando. Aquí deberíamos mostrar un shimmer</h3>
       </div>
-      <!-- <iframe [ngStyle]="{'display': loading ? 'none' : 'unset'}" id="skeduIframe" style="border: 1px solid mediumslateblue;" width="100%" height="800px" src="https://haulmer-angular-wks-testing-2.azurewebsites.net/" frameborder="0"></iframe> -->
+      <!-- <iframe (load)="iframeLoaded()" [ngStyle]="{'display': loading ? 'none' : 'unset'}" id="skeduIframe" style="border: 1px solid mediumslateblue;" width="100%" height="800px" src="https://haulmer-angular-wks-testing-2.azurewebsites.net/" frameborder="0"></iframe> -->
       <iframe (load)="iframeLoaded()" [ngStyle]="{'display': loading ? 'none' : 'unset'}" id="skeduIframe" style="border: 1px solid mediumslateblue;" width="100%" height="800px" src="http://localhost:3000" frameborder="0"></iframe>
     </div>
   `,
