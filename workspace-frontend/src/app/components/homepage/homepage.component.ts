@@ -15,7 +15,6 @@ import { Component, AfterViewInit } from '@angular/core';
   `,
   styleUrls: ['./homepage.component.scss']
 })
-// export class HomepageComponent implements AfterViewInit {
 export class HomepageComponent {
   public loading = true;
 
@@ -64,24 +63,4 @@ export class HomepageComponent {
     console.log('[WKS] Enviando mensaje:', { message, windowElement, targetOrigin });
     windowElement.postMessage(message, targetOrigin);
   }
-
-  // ngAfterViewInit(): void {
-  //   const skeduIframe: any = document.querySelector('#skeduIframe');
-  //   const skeduWindow = skeduIframe.contentWindow;
-  //   const skeduUrl = new URL(skeduIframe.getAttribute('src'));
-
-  //   const initSkedu = (event: any) => {
-  //     if (event.data.data != 'ready') return;
-  //     this.loading = false;
-  //     this.sendMessage({
-  //       type: 'config',
-  //       data: {
-  //         accessToken: 'Bearer 13t12e3rt12'
-  //       }
-  //     }, skeduWindow, skeduUrl.origin)
-  //   };
-
-  //   // When recive message from iframe send configuration
-  //   this.listenMessages(skeduUrl.origin, initSkedu);
-  // }
 }
