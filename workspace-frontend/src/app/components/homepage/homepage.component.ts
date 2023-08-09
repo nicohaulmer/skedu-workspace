@@ -7,7 +7,7 @@ import { Component, AfterViewInit } from '@angular/core';
       <a href="./ruta-a">Ir a Ruta A</a>
       <h2>TUU Reserva</h2>
       <div *ngIf="loading">
-        <h3>El iframe está cargando. Aquí deberíamos mostrar un shimmer</h3>
+        <h3>El iframe está cargando. Mientras deberíamos mostrar un shimmer aquí jaja</h3>
       </div>
       <!-- <iframe (load)="iframeLoaded()" [ngStyle]="{'display': loading ? 'none' : 'unset'}" id="skeduIframe" style="border: 1px solid mediumslateblue;" width="100%" height="800px" src="https://haulmer-angular-wks-testing-2.azurewebsites.net/" frameborder="0"></iframe> -->
       <iframe (load)="iframeLoaded()" [ngStyle]="{'display': loading ? 'none' : 'unset'}" id="skeduIframe" style="border: 1px solid mediumslateblue;" width="100%" height="800px" src="http://localhost:3000" frameborder="0"></iframe>
