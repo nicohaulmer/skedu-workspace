@@ -2,29 +2,15 @@ import Head from 'next/head';
 import styles from '../styles/Home.module.css';
 import * as React from "react";
 import Link from 'next/link';
+import { IframeWindowMessages } from '../utils/iframe-window-message';
 
 function checkIframe() {
-  console.log('[SKEDU] Es un iframe:', window.self !== window.top);
+  console.log(`[${window.origin}] Es un iframe:`, window.self !== window.top);
   return window.self !== window.top;
 }
 
-function listenMessages(fromOrigin, callback) {
-  console.log('[SKEDU] Escuchando mensajes');
-  window.addEventListener('message', (event) => {
-      // console.log({event, fromOrigin});
-      if (event.origin !== fromOrigin) { return; }
-      console.log('[SKEDU] Mensaje recibido:', event);
-      callback(event);
-  });
-}
-
-function sendMessage(message, windowElement, targetOrigin) {
-  console.log('[SKEDU] Enviando mensaje:', {message, windowElement, targetOrigin});
-  windowElement.postMessage(message, targetOrigin);
-}
-
 export default function Home() {
-  const [accessToken, setAccessToken] = React.useState('Sin access token');
+  const [accessToken, setAccessToken] = React.useState('Aún no se tiene una token.');
 
   React.useEffect(() => {
     if (checkIframe()) {
@@ -33,15 +19,12 @@ export default function Home() {
       const workspaceUrl = new URL('http://localhost:4200');
 
       // Listen workspace messages to get config with bearer token
-      listenMessages(workspaceUrl.origin, (event) => {
-        console.log('[SKEDU] Configuración recibida.');
-        setAccessToken(event.data.data.accessToken);
+      IframeWindowMessages.listenMessages(workspaceUrl.origin, (event) => {
+        const accessToken = event.data.payload.accessToken;
+        setAccessToken(accessToken);
 
         // Notify workspace that app is ready
-        sendMessage({
-          type: 'init',
-          data: 'ready'
-        }, workspaceWindow, workspaceUrl.origin);
+        IframeWindowMessages.sendMessage(workspaceWindow, workspaceUrl.origin, { type: 'READY', data: null });
       });
     }
   }, []);
